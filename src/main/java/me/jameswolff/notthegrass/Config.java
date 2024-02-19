@@ -27,10 +27,15 @@ public class Config
         .comment("List of blocks to always process as normal. Even if they have a tag in the tag list.")
         .defineListAllowEmpty("blockIgnoreList", List.of("minecraft:carved_pumpkin"), Config::validateBlockName);
 
+    private static final ModConfigSpec.BooleanValue CANCEL_ACTION = BUILDER
+        .comment("Whether to cancel the original action if we attack an entity instead.")
+        .define("cancelAction", true);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public static Set<ResourceLocation> tagList;
     public static Set<Block> blockIgnoreList;
+    public static boolean cancelAction;
 
     private static boolean validateTagKey(final Object obj)
     {
@@ -60,6 +65,8 @@ public class Config
             .collect(Collectors.toSet());
         NotTheGrass.LOGGER.info("Block ignore list loaded:");
         blockIgnoreList.forEach(block -> NotTheGrass.LOGGER.info(block.toString()));
+        cancelAction = CANCEL_ACTION.get();
+        NotTheGrass.LOGGER.info("Cancel action loaded: " + cancelAction);
 
         NotTheGrass.LOGGER.info("Config loaded");
     }
