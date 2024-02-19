@@ -34,8 +34,8 @@ public class NotTheGrass
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    // Checks if the block clicked is in the {@link Config#blockIgnoreList} and then whether if it has one of the tags in the
-    // {@link Config#tagList},  if so cancel the event
+    // Checks to make sure the block clicked is not in the {@link Config#blockIgnoreList} and then whether it has one of the tags
+    // in the {@link Config#tagList}, if so cancel the event.
     @SubscribeEvent
     public void onLeftClickBlockEvent(LeftClickBlock event)
     {
