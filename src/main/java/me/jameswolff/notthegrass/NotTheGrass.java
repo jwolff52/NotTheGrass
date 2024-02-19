@@ -2,7 +2,11 @@ package me.jameswolff.notthegrass;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
@@ -10,6 +14,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -35,14 +42,14 @@ public class NotTheGrass
     }
 
     // Checks to make sure the block clicked is not in the {@link Config#blockIgnoreList} and then whether it has one of the tags
-    // in the {@link Config#tagList}, if so cancel the event.
+    // in the {@link Config#tagList}, if so check to see if that block contains any entities and if so attack the first one.
+    // If the config option {@link Config#cancelAction} is true then cancel the original LeftClickBlockEvent.
     @SubscribeEvent
     public void onLeftClickBlockEvent(LeftClickBlock event)
     {
         if (event == null) return;
         if (event.getAction() == LeftClickBlock.Action.START)
         {
-            LOGGER.info("Left click block start");
             if(event.getLevel() == null) return;
             BlockState blockState = event.getLevel().getBlockState(event.getPos());
             if (blockState == null) return;
@@ -52,8 +59,23 @@ public class NotTheGrass
                 .filter(tag -> tag.isFor(BuiltInRegistries.BLOCK.key()))
                 .noneMatch(tag -> Config.tagList.contains(tag.location())))
                 return;
-            LOGGER.info("Cancelling left click block event");
-            event.setCanceled(true);
+            Player player = event.getEntity();
+            List<Entity> entitiesInBlock = event.getLevel().getEntities(player, new AABB(event.getPos()));
+            if (entitiesInBlock == null || entitiesInBlock.isEmpty()) return;
+            entitiesInBlock.forEach(entity -> LOGGER.info("Entity in block: " + entity));
+            for (Entity e : entitiesInBlock)
+            {
+                if (e instanceof ItemEntity)
+                {
+                    continue;
+                }
+                else
+                {
+                    player.attack(e);
+                    break;
+                }
+            }
+            event.setCanceled(Config.cancelAction);
         }
     }
 }
