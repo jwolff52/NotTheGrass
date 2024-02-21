@@ -16,7 +16,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -62,19 +61,23 @@ public class NotTheGrass
             Player player = event.getEntity();
             List<Entity> entitiesInBlock = event.getLevel().getEntities(player, new AABB(event.getPos()));
             if (entitiesInBlock == null || entitiesInBlock.isEmpty()) return;
-            entitiesInBlock.forEach(entity -> LOGGER.info("Entity in block: " + entity));
-            for (Entity e : entitiesInBlock)
+            entitiesInBlock.forEach(entity -> LOGGER.info("Entity in block: " + entity + (entity instanceof ItemEntity)));
+            boolean onlyItemEnities = true;
+            for (Entity entity : entitiesInBlock)
             {
-                if (e instanceof ItemEntity)
+                if (entity instanceof ItemEntity)
                 {
                     continue;
                 }
                 else
                 {
-                    player.attack(e);
+                    onlyItemEnities = false;
+                    LOGGER.info("Attacking entity: " + entity);
+                    player.attack(entity);
                     break;
                 }
             }
+            if (onlyItemEnities) return;
             event.setCanceled(Config.cancelAction);
         }
     }
