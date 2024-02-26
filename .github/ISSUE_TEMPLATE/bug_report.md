@@ -21,7 +21,10 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Screenshots/Logs**
-If applicable, add screenshots or logs to help explain your problem. Logs can either be a link to a [pastebin](https://pastebin.com/) or a [gist](https://gist.github.com/) or pasted here in ```backticks```
+If applicable, add screenshots or logs to help explain your problem. Logs can either be a link to a [pastebin](https://pastebin.com/) or a [gist](https://gist.github.com/) or pasted here in 
+```
+backticks
+```
 
 **Desktop (please complete the following information):**
  - Minecraft Version [e.g. 1.20.4]
